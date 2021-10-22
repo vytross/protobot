@@ -127,9 +127,6 @@ async function endGame(filePath, interaction) {
                 await endMessage.delete();
             }
         });
-        .catch(collected => {
-            thread.setArchived(true);
-        });
 
     await jsonWrite(filePath, gameContents);
 }
