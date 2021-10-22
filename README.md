@@ -22,8 +22,8 @@ ProtoTech Games is a ProtoTech Discord bot that adds a few in-app games for user
 - Added /changelog command: Responds with a brief summary page of recent changes to the bot.
 #### Pre-Release v0.0.0
 - Introduced the bot to Discord!
+- Added new game tic-tac-toe: A simple game for testing purposes, both for the /game system and for potential future bot capabilities in other games.
 - Added /ping command: Responds with "pong", a good way to test the bot is operating.
 - Added /info command: Responds with an information board about the bot, its capabilities, and a link to this Github page.
 - Added /channel command: Allows members with the "Manage Server" permission to add or remove channels that the bot can use for responding to commands.
 - Added /game command: Begins a new game by creating a new thread, adding the users, and reading the script specific to the game selected.
-- Added new game tic-tac-toe: A simple game for testing purposes, both for the /game system and for potential future bot capabilities in other games.
