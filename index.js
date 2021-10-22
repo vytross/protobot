@@ -113,12 +113,9 @@ client.on('threadUpdate', async (oldThread, newThread) => {
         }
         if (gamePath) {
             const gameFileContents = await jsonRead(gamePath);
-            console.log(gameFileContents);
-            console.log(gamePath);
             fs.unlinkSync(gamePath);
             const parentChannel = oldThread.parent;
-            const startMessage = await parentChannel.messages.cache.find(message => message.id == gameFileContents.initialMessageId);
-            await startMessage.delete();
+            await client.channels.cache.get(parentChannel.id).messages.fetch(gameFileContents.initialMessageId).then(message => message.delete());
             await newThread.delete();
         }
     }
