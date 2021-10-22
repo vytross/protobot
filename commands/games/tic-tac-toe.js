@@ -32,7 +32,7 @@ module.exports = {
 		    opponentId = opponent.id;
 		}
 		else {
-		    opponentName = 'ProtoBot';
+		    opponentName = 'ProtoTech Games';
 		    opponentId = config.clientId;
 		}
 
@@ -114,11 +114,9 @@ module.exports = {
         if (interaction.options.getBoolean('first') === false && opponentId != config.clientId) {
             const message = await thread.send({content: opponentName + '\'s turn!', components: [row1, row2, row3]});
             messageId = message.id;
-            message.pin();
         } else {
             const message = await thread.send({content: username + '\'s turn!', components: [row1, row2, row3]});
             messageId = message.id;
-            message.pin();
         }
 
         let jsonFile = {};
@@ -137,7 +135,7 @@ module.exports = {
                     username
                 ],
                 moves: [],
-                gameOver: false
+                gameOver: false,
             };
         } else if (interaction.options.getBoolean('first') === false && opponentId == config.clientId) {
             jsonFile = {
@@ -156,7 +154,7 @@ module.exports = {
                 moves: [
                     {square: '5', tile: 'X'}
                 ],
-                gameOver: false
+                gameOver: false,
             };
         } else {
             jsonFile = {
@@ -173,7 +171,7 @@ module.exports = {
                     opponentName
                 ],
                 moves: [],
-                gameOver: false
+                gameOver: false,
             };
         }
         let data = JSON.stringify(jsonFile);
