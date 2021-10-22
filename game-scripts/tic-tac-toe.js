@@ -61,7 +61,7 @@ async function endGame(filePath, interaction) {
                         .setEmoji('⬛')
                         .setStyle('PRIMARY'),
                 );
-                if (gameContents.playerIds[0] == '897287971793940481') {
+                if (gameContents.playerIds[0] == config.clientId) {
                     row2.addComponents(
                         new MessageButton()
                             .setCustomId('4')
@@ -108,7 +108,7 @@ async function endGame(filePath, interaction) {
                 );
 
                 let messageId = 0;
-                if (gameContents.playerIds[0] == '897287971793940481') {
+                if (gameContents.playerIds[0] == config.clientId) {
                     const message = await thread.send({content: gameContents.playerNames[1] + '\'s turn!', components: [row1, row2, row3]});
                     messageId = message.id;
                     gameContents.moves = [{square: '5', tile: 'X'}];
