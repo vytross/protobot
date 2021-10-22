@@ -10,6 +10,7 @@ module.exports = {
 	        .setColor('#E133FF')
 	        .setAuthor('GitHub', 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png', 'https://github.com/vytross/prototech-games')
 	        .setFooter('ProtoTech Games', 'https://cdn.discordapp.com/attachments/793289338112835588/896543216017502268/protoshrek.png')
+	    	.setURL('https://github.com/vytross/prototech-games/blob/main/README.md')
 	        .setTitle('Change Log')
 	        .addFields(
 	            {name: 'Pre-Release v0.0.1', value: '• Added /changelog command\n• Fixed tic-tac-toe algorithm\n• Added restart and delete reaction messages to finished games'},
