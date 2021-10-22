@@ -13,8 +13,8 @@ module.exports = {
 	    	.setURL('https://github.com/vytross/prototech-games/blob/main/README.md')
 	        .setTitle('Change Log')
 	        .addFields(
-	            {name: 'Pre-Release v0.0.1', value: '• Added /changelog command\n• Fixed tic-tac-toe algorithm\n• Added restart and delete reaction messages to finished games'},
-	            {name: 'Pre-Release v0.0.0', value: '• Introduced the bot to Discord!\n• Added /ping command\n• Added /info command\n• Added /channel command\n• Added /game command\n• Added tic-tac-toe'}
+	            {name: 'Pre-Release v0.0.1', value: '• Fixed tic-tac-toe algorithm\n• Added restart and delete reaction messages to finished games\n• Added /changelog command'},
+	            {name: 'Pre-Release v0.0.0', value: '• Introduced the bot to Discord!\n• Added new game tic-tac-toe\n• Added /ping command\n• Added /info command\n• Added /channel command\n• Added /game command'}
 	        )
 	        .setTimestamp();
 		await interaction.reply({embeds: [embed]});
