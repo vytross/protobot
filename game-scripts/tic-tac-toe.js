@@ -25,6 +25,114 @@ function jsonWrite(filePath, data) {
     });
   });
 }
+async function endGame(filePath, interaction) {
+    const gameContents = await jsonRead(filePath);
+    await fs.unlinkSync(filePath);
+    const thread = interaction.channel;
+    const endMessage = await thread.send({content: 'Game over! React :recycle: to restart the game or :wastebasket: to delete the thread.'});
+    await endMessage.react('♻');
+    await endMessage.react('🗑');
+
+    const filter = (reaction, user) => {
+        return ['♻', '🗑'].includes(reaction.emoji.name) && gameContents.playerIds.includes(user.id);
+    }
+    endMessage.awaitReactions({filter, max: 1, time: 300000, errors: ['time']})
+        .then(async collected => {
+            const reaction = collected.first();
+            if (reaction.emoji.name == '🗑') {
+                thread.setArchived(true);
+            } else {
+                const interactionMessage = interaction.message;
+                await interactionMessage.delete();
+                const row1 = new MessageActionRow();
+                const row2 = new MessageActionRow();
+                const row3 = new MessageActionRow();
+                row1.addComponents(
+                    new MessageButton()
+                        .setCustomId('1')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                    new MessageButton()
+                        .setCustomId('2')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                    new MessageButton()
+                        .setCustomId('3')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                );
+                if (gameContents.playerIds[0] == '897287971793940481') {
+                    row2.addComponents(
+                        new MessageButton()
+                            .setCustomId('4')
+                            .setEmoji('⬛')
+                            .setStyle('PRIMARY'),
+                        new MessageButton()
+                            .setCustomId('5')
+                            .setEmoji('🇽')
+                            .setStyle('PRIMARY'),
+                        new MessageButton()
+                            .setCustomId('6')
+                            .setEmoji('⬛')
+                            .setStyle('PRIMARY'),
+                    );
+                } else {
+                    row2.addComponents(
+                        new MessageButton()
+                            .setCustomId('4')
+                            .setEmoji('⬛')
+                            .setStyle('PRIMARY'),
+                        new MessageButton()
+                            .setCustomId('5')
+                            .setEmoji('⬛')
+                            .setStyle('PRIMARY'),
+                        new MessageButton()
+                            .setCustomId('6')
+                            .setEmoji('⬛')
+                            .setStyle('PRIMARY'),
+                    );
+                }
+                row3.addComponents(
+                    new MessageButton()
+                        .setCustomId('7')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                    new MessageButton()
+                        .setCustomId('8')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                    new MessageButton()
+                        .setCustomId('9')
+                        .setEmoji('⬛')
+                        .setStyle('PRIMARY'),
+                );
+
+                let messageId = 0;
+                if (gameContents.playerIds[0] == '897287971793940481') {
+                    const message = await thread.send({content: gameContents.playerNames[1] + '\'s turn!', components: [row1, row2, row3]});
+                    messageId = message.id;
+                    gameContents.moves = [{square: '5', tile: 'X'}];
+                    gameContents.messageId = messageId;
+                } else {
+                    const message = await thread.send({content: gameContents.playerNames[0] + '\'s turn!', components: [row1, row2, row3]});
+                    messageId = message.id;
+                    gameContents.moves = [];
+                    gameContents.messageId = messageId;
+                }
+
+                gameContents.gameOver = false;
+
+                let data = JSON.stringify(gameContents);
+                fs.writeFileSync(`commands/games/${messageId}.json`, data);
+                await endMessage.delete();
+            }
+        });
+        .catch(collected => {
+            thread.setArchived(true);
+        });
+
+    await jsonWrite(filePath, gameContents);
+}
 
 module.exports = {
 	name: 'tic-tac-toe',
@@ -69,8 +177,12 @@ module.exports = {
         var squareValues = ['⬛', '⬛', '⬛', '⬛', '⬛', '⬛', '⬛', '⬛', '⬛'];
         for (let i = 0; i < gameContents.moves.length; i++) {
             const squareId = parseInt(gameContents.moves[i].square, 10);
-            if (gameContents.moves[i].tile == 'X') squareValues[squareId - 1] = '🇽';
-            else squareValues[squareId - 1] = '🇴';
+            if (gameContents.moves[i].tile == 'X') {
+                squareValues[squareId - 1] = '🇽';
+            }
+            else {
+                squareValues[squareId - 1] = '🇴';
+            }
         }
 
         const row1 = new MessageActionRow()
@@ -128,16 +240,48 @@ module.exports = {
             ((squareValues[0] == squareValues[4]) && (squareValues[4] == squareValues[8]) && (squareValues[0] != '⬛')) ||
             ((squareValues[2] == squareValues[4]) && (squareValues[4] == squareValues[6]) && (squareValues[2] != '⬛'))) {
             gameContents.gameOver = true;
-            interaction.update({content: 'Game over! ' + gameContents.playerNames[(gameContents.moves.length - 1) % 2] + ' wins!', components: [row1, row2, row3]});
+            interaction.update({content: gameContents.playerNames[(gameContents.moves.length - 1) % 2] + ' wins!', components: [row1, row2, row3]});
+            await jsonWrite(gamePath, gameContents);
+            await endGame(gamePath, interaction);
         } else if (gameContents.moves.length == 9) {
             gameContents.gameOver = true;
-            interaction.update({content: 'Game over! Players tied!', components: [row1, row2, row3]});
+            interaction.update({content: 'It\'s a draw!', components: [row1, row2, row3]});
+            await jsonWrite(gamePath, gameContents);
+            await endGame(gamePath, interaction);
         } else if (gameContents.playerIds[gameContents.moves.length % 2] == config.clientId) {
-            var nextMove; // this algorithm should always tie no matter what for maximum infuriation
+            var botValue;
+            if (gameContents.moves.length % 2 == 1) botValue = '🇴';
+            else botValue = '🇽';
 
-            if ((((squareValues[1] == squareValues[2]) && (squareValues[1] != '⬛')) ||
-                 ((squareValues[3] == squareValues[6]) && (squareValues[3] != '⬛')) ||
-                 ((squareValues[4] == squareValues[8]) && (squareValues[4] != '⬛'))) && (squareValues[0] == '⬛')) nextMove = 0;
+            var nextMove;
+
+            if ((((squareValues[1] == squareValues[2]) && (squareValues[1] == botValue)) ||
+                 ((squareValues[3] == squareValues[6]) && (squareValues[3] == botValue)) ||
+                 ((squareValues[4] == squareValues[8]) && (squareValues[4] == botValue))) && (squareValues[0] == '⬛')) nextMove = 0;
+            else if ((((squareValues[4] == squareValues[7]) && (squareValues[4] == botValue)) ||
+                      ((squareValues[0] == squareValues[2]) && (squareValues[0] == botValue))) && (squareValues[1] == '⬛')) nextMove = 1;
+            else if ((((squareValues[5] == squareValues[8]) && (squareValues[5] == botValue)) ||
+                      ((squareValues[4] == squareValues[6]) && (squareValues[4] == botValue)) ||
+                      ((squareValues[0] == squareValues[1]) && (squareValues[0] == botValue))) && (squareValues[2] == '⬛')) nextMove = 2;
+            else if ((((squareValues[4] == squareValues[5]) && (squareValues[4] == botValue)) ||
+                      ((squareValues[0] == squareValues[6]) && (squareValues[0] == botValue))) && (squareValues[3] == '⬛')) nextMove = 3;
+            else if ((((squareValues[3] == squareValues[5]) && (squareValues[3] == botValue)) ||
+                      ((squareValues[0] == squareValues[8]) && (squareValues[0] == botValue)) ||
+                      ((squareValues[2] == squareValues[6]) && (squareValues[2] == botValue)) ||
+                      ((squareValues[1] == squareValues[7]) && (squareValues[1] == botValue))) && (squareValues[4] == '⬛')) nextMove = 4;
+            else if ((((squareValues[3] == squareValues[4]) && (squareValues[3] == botValue)) ||
+                      ((squareValues[2] == squareValues[8]) && (squareValues[2] == botValue))) && (squareValues[5] == '⬛')) nextMove = 5;
+            else if ((((squareValues[7] == squareValues[8]) && (squareValues[7] == botValue)) ||
+                      ((squareValues[0] == squareValues[3]) && (squareValues[0] == botValue)) ||
+                      ((squareValues[2] == squareValues[4]) && (squareValues[2] == botValue))) && (squareValues[6] == '⬛')) nextMove = 6;
+            else if ((((squareValues[1] == squareValues[4]) && (squareValues[1] == botValue)) ||
+                      ((squareValues[6] == squareValues[8]) && (squareValues[6] == botValue))) && (squareValues[7] == '⬛')) nextMove = 7;
+            else if ((((squareValues[6] == squareValues[7]) && (squareValues[6] == botValue)) ||
+                      ((squareValues[2] == squareValues[5]) && (squareValues[2] == botValue)) ||
+                      ((squareValues[0] == squareValues[4]) && (squareValues[0] == botValue))) && (squareValues[8] == '⬛')) nextMove = 8;
+            else if ((((squareValues[1] == squareValues[2]) && (squareValues[1] != '⬛')) ||
+                      ((squareValues[3] == squareValues[6]) && (squareValues[3] != '⬛')) ||
+                      ((squareValues[4] == squareValues[8]) && (squareValues[4] != '⬛'))) && (squareValues[0] == '⬛')) nextMove = 0;
             else if ((((squareValues[4] == squareValues[7]) && (squareValues[4] != '⬛')) ||
                       ((squareValues[0] == squareValues[2]) && (squareValues[0] != '⬛'))) && (squareValues[1] == '⬛')) nextMove = 1;
             else if ((((squareValues[5] == squareValues[8]) && (squareValues[5] != '⬛')) ||
@@ -167,10 +311,10 @@ module.exports = {
                       ((squareValues[0] == squareValues[7]) && (squareValues[0] != '⬛'))) && (squareValues[6] == '⬛')) nextMove = 6;
             else if ((((squareValues[5] == squareValues[6]) && (squareValues[5] != '⬛')) ||
                       ((squareValues[2] == squareValues[7]) && (squareValues[2] != '⬛'))) && (squareValues[8] == '⬛')) nextMove = 8;
-            else if (((squareValues[0] == squareValues[4]) || (squareValues[4] == squareValues[8])) && (squareValues[2] == '⬛')) nextMove = 2;
-            else if (((squareValues[0] == squareValues[4]) || (squareValues[4] == squareValues[8])) && (squareValues[6] == '⬛')) nextMove = 6;
-            else if (((squareValues[2] == squareValues[4]) || (squareValues[4] == squareValues[6])) && (squareValues[0] == '⬛')) nextMove = 0;
-            else if (((squareValues[2] == squareValues[4]) || (squareValues[4] == squareValues[6])) && (squareValues[8] == '⬛')) nextMove = 8;
+            else if (((squareValues[0] == squareValues[4]) || (squareValues[4] == squareValues[8])) && (squareValues[2] == '⬛') && (squareValues[4] != '⬛')) nextMove = 2;
+            else if (((squareValues[0] == squareValues[4]) || (squareValues[4] == squareValues[8])) && (squareValues[6] == '⬛') && (squareValues[4] != '⬛')) nextMove = 6;
+            else if (((squareValues[2] == squareValues[4]) || (squareValues[4] == squareValues[6])) && (squareValues[0] == '⬛') && (squareValues[4] != '⬛')) nextMove = 0;
+            else if (((squareValues[2] == squareValues[4]) || (squareValues[4] == squareValues[6])) && (squareValues[8] == '⬛') && (squareValues[4] != '⬛')) nextMove = 8;
             else if ((gameContents.moves.length == 1) && (squareValues[4] != '⬛') && (squareValues[0] == '⬛')) nextMove = 0;
             else if ((gameContents.moves.length == 1) && (squareValues[4] != '⬛') && (squareValues[2] == '⬛')) nextMove = 2;
             else if ((gameContents.moves.length == 1) && (squareValues[4] != '⬛') && (squareValues[6] == '⬛')) nextMove = 6;
@@ -253,17 +397,22 @@ module.exports = {
                 ((squareValues[0] == squareValues[4]) && (squareValues[4] == squareValues[8]) && (squareValues[0] != '⬛')) ||
                 ((squareValues[2] == squareValues[4]) && (squareValues[4] == squareValues[6]) && (squareValues[2] != '⬛'))) {
                 gameContents.gameOver = true;
-                interaction.update({content: 'Game over! ' + gameContents.playerNames[(gameContents.moves.length - 1) % 2] + ' wins!', components: [row1, row2, row3]});
+                interaction.update({content: gameContents.playerNames[(gameContents.moves.length - 1) % 2] + ' wins!', components: [row1, row2, row3]});
+                await jsonWrite(gamePath, gameContents);
+                await endGame(gamePath, interaction);
             } else if (gameContents.moves.length == 9) {
                 gameContents.gameOver = true;
-                interaction.update({content: 'Game over! Players tied!', components: [row1, row2, row3]});
+                interaction.update({content: 'It\'s a draw!', components: [row1, row2, row3]});
+                await jsonWrite(gamePath, gameContents);
+                await endGame(gamePath, interaction);
             } else {
                 interaction.update({content: gameContents.playerNames[gameContents.moves.length % 2] + '\'s turn!', components: [row1, row2, row3]});
+                await jsonWrite(gamePath, gameContents);
             }
         } else {
             interaction.update({content: gameContents.playerNames[gameContents.moves.length % 2] + '\'s turn!', components: [row1, row2, row3]});
+            await jsonWrite(gamePath, gameContents);
         }
 
-        await jsonWrite(gamePath, gameContents);
 	},
 };
