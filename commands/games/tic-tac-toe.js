@@ -32,7 +32,7 @@ module.exports = {
 		    opponentId = opponent.id;
 		}
 		else {
-		    opponentName = 'ProtoTech Games';
+		    opponentName = 'ProtoBot';
 		    opponentId = config.clientId;
 		}
 
