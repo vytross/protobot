@@ -40,7 +40,9 @@ async function endGame(filePath, interaction) {
         .then(async collected => {
             const reaction = collected.first();
             if (reaction.emoji.name == '🗑') {
-                thread.setArchived(true);
+                const parentChannel = thread.parent;
+                await parentChannel.messages.fetch(gameContents.initialMessageId).then(message => message.delete());
+                await thread.delete();
             } else {
                 const interactionMessage = interaction.message;
                 await interactionMessage.delete();
