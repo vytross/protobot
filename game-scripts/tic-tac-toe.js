@@ -36,7 +36,7 @@ async function endGame(filePath, interaction) {
     const filter = (reaction, user) => {
         return ['♻', '🗑'].includes(reaction.emoji.name) && gameContents.playerIds.includes(user.id);
     }
-    endMessage.awaitReactions({filter, max: 1, time: 300000, errors: ['time']})
+    endMessage.awaitReactions({filter, max: 1, time: 3600000, errors: ['time']})
         .then(async collected => {
             const reaction = collected.first();
             if (reaction.emoji.name == '🗑') {
