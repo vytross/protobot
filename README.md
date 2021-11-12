@@ -19,6 +19,8 @@ ProtoBot is a ProtoTech Discord bot that adds a better application system for th
  
 ## Change Log
 ### Pre-Release v0.1
+#### Pre-Release v0.1.1
+- Major application-related bug fixes, hopefully preventing further crashes related to incoming applications.
 #### Pre-Release v0.1.0
 - Rebranded to ProtoBot! As the bot expands to encompass more areas of Discord that can be improved, a more general name is deserved, especially for future projects.
 - Incorporated ProtoTech Applications to have one cohesive bot, making further development simpler and easier.
