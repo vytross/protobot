@@ -43,7 +43,7 @@ module.exports = {
         const appCommands = new Collection();
         const commandFiles = fs.readdirSync('./applications').filter(file => file.endsWith('.js'));
         for (const file of commandFiles) {
-            const appCommand = require(`./games/${file}`);
+            const appCommand = require(`../applications/${file}`);
             appCommands.set(appCommand.data.name, appCommand);
         }
 
