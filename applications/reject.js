@@ -18,7 +18,7 @@ function jsonRead(filePath) {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('reject')
-        .setDescription('Reject an application. Enter a user input to have the bot message them directly that they were rejected.')
+        .setDescription('Reject an application. Enter a Discord user to send them directly that they were rejected.')
         .addUserOption(option =>
             option.setName('discord')
                 .setDescription('The applicant\'s Discord username')

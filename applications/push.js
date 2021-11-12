@@ -20,11 +20,13 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        const channel = interaction.channel;
+	const {MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
+        const fs = require('fs');
+	const channel = interaction.channel;
         if (channel.id == 896271184902103070) {
-            const user = interaction.getUser('discord');
-            const ign = interaction.getString('ign');
-            const url = interaction.getString('url');
+            const user = interaction.options.getUser('discord');
+            const ign = interaction.options.getString('ign');
+            const url = interaction.options.getString('url');
 
             const sentEmbed = new MessageEmbed()
                 .setTitle(ign)
