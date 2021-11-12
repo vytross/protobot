@@ -1,5 +1,6 @@
 const {Client, Collection, Intents, Permissions} = require('discord.js');
 const fs = require('fs');
+const {MessageEmbed, MessageButton, MessageActionRow} = require('discord.js');
 const path = require('path');
 const config = require('./config.json');
 const intents = new Intents();
@@ -210,60 +211,61 @@ client.on('messageCreate', async message => {
         message.delete()
           .then(msg => console.log(`Deleted webhook message`))
           .catch(console.error);
+	if (receivedEmbed) {
+        	const username = receivedEmbed.title;
+        	const discord = receivedEmbed.author.name;
+        	const sentEmbed = new MessageEmbed(receivedEmbed).setTitle(username);
+        	const mainEmbed = new MessageEmbed()
+        	    .setTitle(username + "'s application")
+        	    .setDescription('Upvotes: 0\nDownvotes: 0\nDelete votes: 0 of 4');
+        	const row = new MessageActionRow()
+        	    .addComponents(
+        	        new MessageButton()
+        	            .setCustomId('upvote')
+        	            .setEmoji('👍')
+        	            .setLabel('Upvote')
+        	            .setStyle('SUCCESS'),
+        	        new MessageButton()
+        	            .setCustomId('downvote')
+        	            .setEmoji('👎')
+        	            .setLabel('Downvote')
+        	            .setStyle('SUCCESS'),
+        	        new MessageButton()
+        	            .setCustomId('delete')
+        	            .setEmoji('🗑')
+        	            .setLabel('Delete app')
+        	            .setStyle('DANGER'),
+        	        new MessageButton()
+        	            .setCustomId('revoke')
+        	            .setEmoji('♻')
+        	            .setLabel('Revoke vote')
+        	            .setStyle('PRIMARY'),
+        	    );
+        	const mainMessage = await channel.send({embeds: [mainEmbed], components: [row]});
 
-        const username = receivedEmbed.title;
-        const discord = receivedEmbed.author.name;
-        const sentEmbed = new MessageEmbed(receivedEmbed).setTitle(username);
-        const mainEmbed = new MessageEmbed()
-            .setTitle(username + "'s application")
-            .setDescription('Upvotes: 0\nDownvotes: 0\nDelete votes: 0 of 4');
-        const row = new MessageActionRow()
-            .addComponents(
-                new MessageButton()
-                    .setCustomId('upvote')
-                    .setEmoji('👍')
-                    .setLabel('Upvote')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
-                    .setCustomId('downvote')
-                    .setEmoji('👎')
-                    .setLabel('Downvote')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
-                    .setCustomId('delete')
-                    .setEmoji('🗑')
-                    .setLabel('Delete app')
-                    .setStyle('DANGER'),
-                new MessageButton()
-                    .setCustomId('revoke')
-                    .setEmoji('♻')
-                    .setLabel('Revoke vote')
-                    .setStyle('PRIMARY'),
-            );
-        const mainMessage = await channel.send({embeds: [mainEmbed], components: [row]});
+	        const thread = await channel.threads.create({
+	            startMessage: mainMessage,
+	            name: username,
+	            autoArchiveDuration: 10080,
+	            reason: 'New ProtoTech Application',
+	        });
+	        const threadId = thread.id;
+	        const appMessage = await thread.send({embeds: [sentEmbed]});
+	        appMessage.pin()
+	          .then(console.log)
+	          .catch(console.error);
 
-        const thread = await channel.threads.create({
-            startMessage: mainMessage,
-            name: username,
-            autoArchiveDuration: 10080,
-            reason: 'New ProtoTech Application',
-        });
-        const threadId = thread.id;
-        const appMessage = await thread.send({embeds: [sentEmbed]});
-        appMessage.pin()
-          .then(console.log)
-          .catch(console.error);
-
-        var fileName = mainMessage.id;
-        let jsonFile = {
-            messageId: mainMessage.id,
-            threadId: threadId,
-            discord: discord,
-            votes: [{'user': '0', 'vote': 'revoke'}]
-        };
-        let data = JSON.stringify(jsonFile);
-        fs.writeFileSync(`applications/${fileName}.json`, data);
-    }
+	        var fileName = mainMessage.id;
+	        let jsonFile = {
+	            messageId: mainMessage.id,
+	            threadId: threadId,
+	            discord: discord,
+	            votes: [{'user': '0', 'vote': 'revoke'}]
+	        };
+	        let data = JSON.stringify(jsonFile);
+	        fs.writeFileSync(`applications/${fileName}.json`, data);
+	    }
+	}
 });
 
 client.login(config.token);
