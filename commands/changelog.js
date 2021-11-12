@@ -13,6 +13,7 @@ module.exports = {
 	        .setURL('https://github.com/vytross/protobot/blob/main/README.md')
 	        .setTitle('Change Log')
 	        .addFields(
+		    {name: 'Pre-Release v0.1.1', value: '• Major application bug fixes'},
 	            {name: 'Pre-Release v0.1.0', value: '• Rebranded to ProtoBot\n• Incorporated ProtoTech Applications\n• Improved admin-side application control usability\n• Bug fixes for tic-tac-toe crashes\n• Added /application command'}
 	        )
 	        .setTimestamp();
