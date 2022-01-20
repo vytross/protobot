@@ -2,22 +2,31 @@
 
 
 ## General Information
-ProtoBot is a ProtoTech Discord bot that adds a better application system for the ProtoTech server along with a few in-app games for users to play. The bot is currently in its earliest stages, and has much room to grow, so expect big things in the future!
+Built and maintained by vytross, ProtoBot adds a better application and server management system to the ProtoTech server to make administrative duties easier. The bot is currently in its earliest stages, and has much room to grow, so expect big things in the future!
 ### Current Commands
 - /ping: pong  
 - /info: Gives a general information board about the bot.  
-- /game: Begins a new game.
-  - /game tic-tac-toe: Begins a game of tic-tac-toe. Takes user input for the opponent (defaulting to the bot itself) and boolean input for whether the player would like to go first or second.
 - /channel: Adds or removes available channels for use in the Discord server. Admin-only.
 - /changelog: Gives a brief synopsis of the most recent changes to the bot.
 - /application: Allows basic control over incoming applications to reduce manual effort. Admin-only.
-### Current Games
-- Tic-Tac-Toe
+### Bot Testing Team
+- vytross
+- slick
+- Alphanet
+- polarbub
+- Heroix
+- lenrik
+- Ruwen
+- LennyHoops
 ### Comprised Of
 - [ProtoTech Applications](https://github.com/vytross/app-bot)
-- ProtoTech Games
+- ProtoBot Beta
  
 ## Change Log
+### Pre-Release v0.2
+#### Pre-Release v0.2.0
+- Unfortunately, the game feature has been removed from ProtoBot. Don't worry, it will be added back sooner or later, whether it be to this bot or another. This change was made primarily for stability reasons, to ensure the bot shouldn't crash anymore under any circumstances.
+- Further application-related bug fixes
 ### Pre-Release v0.1
 #### Pre-Release v0.1.1
 - Major application-related bug fixes, hopefully preventing further crashes related to incoming applications.
