@@ -5,33 +5,15 @@ module.exports = {
         .setName('application')
         .setDescription('Gives basic controls over incoming ProtoTech applications.')
         .addSubcommand(subcommand =>
-            subcommand.setName('push')
-                .setDescription('Push a new application manually.')
-                .addUserOption(option =>
-                    option.setName('discord')
-                        .setDescription('The applicant\'s Discord username')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('ign')
-                        .setDescription('The applicant\'s in-game name')
-                        .setRequired(true)
-                )
-                .addStringOption(option =>
-                    option.setName('url')
-                        .setDescription('The URL to the applicant\'s responses')
-                        .setRequired(true)
-                ))
-        .addSubcommand(subcommand =>
             subcommand.setName('accept')
-                .setDescription('Accept an application. Either directly in the thread or by using user input.')
+                .setDescription('Accept an application. Enter directly in the thread; use user input to DM directly.')
                 .addUserOption(option =>
                     option.setName('discord')
                         .setDescription('The applicant\'s Discord username')
                 ))
         .addSubcommand(subcommand =>
             subcommand.setName('reject')
-                .setDescription('Reject an application. Either directly in the thread or by using user input.')
+                .setDescription('Reject an application. Enter directly in the thread; use user input to DM directly.')
                 .addUserOption(option =>
                     option.setName('discord')
                     .setDescription('The applicant\'s Discord username')
@@ -41,9 +23,9 @@ module.exports = {
         const fs = require('fs');
 
         const appCommands = new Collection();
-        const commandFiles = fs.readdirSync('./applications').filter(file => file.endsWith('.js'));
+        const commandFiles = fs.readdirSync('./commands/application').filter(file => file.endsWith('.js'));
         for (const file of commandFiles) {
-            const appCommand = require(`../applications/${file}`);
+            const appCommand = require(`../commands/application/${file}`);
             appCommands.set(appCommand.data.name, appCommand);
         }
 
